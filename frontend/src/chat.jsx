@@ -9,17 +9,24 @@ export default function ChatApp() {
   const threadId =
     Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
 
-  const callServer = async (inputText) => {
-    const response = await fetch("http://localhost:3001/chat", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ threadId, message: inputText }),
-    });
+ const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:3001"
+    : import.meta.env.VITE_API_BASE_URL;
 
-    if (!response.ok) throw new Error("Error generating the response.");
-    const result = await response.json();
-    return result.message;
-  };
+console.log("🧠 Using API Base URL:", BASE_URL);
+
+const callServer = async (inputText) => {
+  const response = await fetch(`${BASE_URL}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ threadId, message: inputText }),
+  });
+
+  if (!response.ok) throw new Error("Error generating the response.");
+  const result = await response.json();
+  return result.message;
+};
 
   const generate = async (text) => {
     setMessages((prev) => [...prev, { role: "user", content: text }]);
