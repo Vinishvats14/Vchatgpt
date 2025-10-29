@@ -47,7 +47,7 @@ Then add the environment variable in Vercel dashboard:
 In `netlify.toml` or Netlify dashboard, set:
 ```
 [build.environment]
-  VITE_API_BASE_URL = "https://vchatgpt.onrender.com"
+  VITE_API_BASE_URL = "https://your-backend-url.onrender.com"
 ```
 
 ## Local Development

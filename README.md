@@ -34,7 +34,7 @@ A modern chat application powered by AI, built with React and Node.js.
 
 1. Clone the repository
 ```bash
-git clone https://github.com/Vinishvats14/Vchatgpt.git
+git clone <repository-url>
 cd Vchatgpt
 ```
 
