@@ -16,6 +16,10 @@ export default function ChatApp() {
 
 console.log("🧠 Using API Base URL:", BASE_URL);
 
+const isProductionMissingUrl =
+  import.meta.env.MODE !== "development" && !import.meta.env.VITE_API_BASE_URL;
+
+
 const callServer = async (inputText) => {
   const response = await fetch(`${BASE_URL}/chat`, {
     method: "POST",
@@ -29,6 +33,18 @@ const callServer = async (inputText) => {
 };
 
   const generate = async (text) => {
+    if (isProductionMissingUrl) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "system",
+          content:
+            "Deployment error: VITE_API_BASE_URL not set. Contact the site owner or rebuild with the API URL.",
+        },
+      ]);
+      return;
+    }
+
     setMessages((prev) => [...prev, { role: "user", content: text }]);
     setInput("");
     setLoading(true);

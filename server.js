@@ -8,13 +8,26 @@ dotenv.config();
 
 const app = express() ;
 const port = process.env.PORT || 3001 ;
+// Configure CORS from ALLOWED_ORIGINS environment variable (comma-separated)
+const allowed = (process.env.ALLOWED_ORIGINS || `${process.env.CLIENT_URL || ''},http://localhost:5173`)
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
 
-app.use(cors()) ;
-
-app.use(cors({
-  origin: [process.env.CLIENT_URL, "http://localhost:5173"],
-  credentials: true,
-}));
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            // allow non-browser tools like curl (no origin)
+            if (!origin) return callback(null, true);
+            if (allowed.indexOf(origin) !== -1 || allowed.indexOf('*') !== -1) {
+                return callback(null, true);
+            }
+            console.warn('Blocked CORS origin:', origin);
+            return callback(new Error('CORS not allowed for origin'), false);
+        },
+        credentials: true,
+    })
+);
 
 app.use(express.json()) ;
 
