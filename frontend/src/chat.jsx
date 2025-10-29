@@ -17,15 +17,30 @@ export default function ChatApp() {
 console.log("🧠 Using API Base URL:", BASE_URL);
 
 const callServer = async (inputText) => {
-  const response = await fetch(`${BASE_URL}/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ threadId, message: inputText }),
-  });
+  // ensure we don't produce a double-slash when BASE_URL ends with '/'
+  const base = BASE_URL ? BASE_URL.replace(/\/+$/, "") : "";
+  const endpoint = `${base}/chat`;
 
-  if (!response.ok) throw new Error("Error generating the response.");
-  const result = await response.json();
-  return result.message;
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, message: inputText }),
+    });
+
+    if (!response.ok) {
+      // try to capture any response body for debugging
+      const text = await response.text().catch(() => "");
+      console.error('Request to', endpoint, 'failed:', response.status, text);
+      throw new Error(`Server returned ${response.status}: ${text || 'No response body'}`);
+    }
+
+    const result = await response.json();
+    return result.message;
+  } catch (err) {
+    console.error('Fetch to', endpoint, 'failed:', err);
+    throw err;
+  }
 };
 
   const generate = async (text) => {
